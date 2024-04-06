@@ -75,3 +75,4 @@ require("luasnip.loaders.from_vscode").lazy_load()
 	require('lspconfig')['pyright'].setup {
     capabilities = capabilities
   }
+

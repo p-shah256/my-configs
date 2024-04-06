@@ -103,4 +103,10 @@ use {
 }
 
 
+use {
+  "ray-x/lsp_signature.nvim",
+}
+
+use {'echasnovski/mini.nvim'}
+
 end)
