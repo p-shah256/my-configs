@@ -15,6 +15,7 @@ return require("packer").startup(function(use)
 	use({ "nvim-telescope/telescope-ui-select.nvim" })
 
 	use({ "catppuccin/nvim", as = "catppuccin" })
+	use("rose-pine/neovim")
 
 	use("nvim-treesitter/nvim-treesitter", { run = ":TSUpdate" })
 
@@ -66,6 +67,10 @@ return require("packer").startup(function(use)
 				-- refer to the configuration section below
 			})
 		end,
+	})
+
+	use({
+		"folke/todo-comments.nvim",
 	})
 
 	use({

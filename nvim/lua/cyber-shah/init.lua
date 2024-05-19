@@ -1,4 +1,3 @@
-require("cyber-shah.remap");
-require("cyber-shah.packer");
-print("cyber-shah");
-
+require("cyber-shah.remap")
+require("cyber-shah.packer")
+print("cyber-shah")
