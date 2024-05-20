@@ -109,3 +109,5 @@ vim.keymap.set("n", "<leader>lg", "<cmd>LazyGit<cr>", { desc = "[l]azy [g]it" })
 
 vim.keymap.set("n", "<leader>fm", "<cmd>set foldmethod=manual<cr>", { desc = "[f]old [m]anual" })
 vim.keymap.set("n", "<leader>fi", "<cmd>set foldmethod=indent<cr>", { desc = "[f]old [i]ndent" })
+
+vim.keymap.set("n", "<C-w>D", "<cmd>bdelete<CR>")
