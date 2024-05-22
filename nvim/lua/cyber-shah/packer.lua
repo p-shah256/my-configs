@@ -92,6 +92,8 @@ return require("packer").startup(function(use)
 
 	use("kdheepak/lazygit.nvim")
 
+	use("LudoPinelli/comment-box.nvim")
+
 	use({
 		"windwp/nvim-autopairs",
 		event = "InsertEnter",

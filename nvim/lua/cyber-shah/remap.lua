@@ -111,3 +111,16 @@ vim.keymap.set("n", "<leader>fm", "<cmd>set foldmethod=manual<cr>", { desc = "[f
 vim.keymap.set("n", "<leader>fi", "<cmd>set foldmethod=indent<cr>", { desc = "[f]old [i]ndent" })
 
 vim.keymap.set("n", "<C-w>D", "<cmd>bdelete<CR>")
+
+-- Titles
+vim.keymap.set({ "n", "v" }, "<Leader>cb", "<Cmd>CBccbox<CR>")
+-- Named parts
+vim.keymap.set({ "n", "v" }, "<Leader>ct", "<Cmd>CBlcline<CR>")
+-- Simple line
+vim.keymap.set("n", "<Leader>cl", "<Cmd>CBline<CR>")
+-- keymap("i", "<M-l>", "<Cmd>CBline<CR>", opts) -- To use in Insert Mode
+-- Marked comments
+vim.keymap.set({ "n", "v" }, "<Leader>cm", "<Cmd>CBllbox14<CR>")
+-- Removing a box is simple enough with the command (CBd), but if you
+-- use it a lot:
+-- keymap({ "n", "v" }, "<Leader>cd", "<Cmd>CBd<CR>", opts)
