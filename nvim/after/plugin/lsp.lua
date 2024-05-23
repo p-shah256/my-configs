@@ -1,5 +1,6 @@
 -- Setup language servers.
 local lspconfig = require("lspconfig")
+local navbuddy = require("nvim-navbuddy")
 
 lspconfig.lua_ls.setup({})
 
@@ -13,6 +14,7 @@ lspconfig.pyright.setup({
 lspconfig.tsserver.setup({
 	on_attach = function(client, bufnr)
 		print("ts signature attach")
+		navbuddy.attach(client, bufnr)
 		require("lsp_signature").on_attach(signature_setup, bufnr) -- Note: add in lsp client on-attach
 	end,
 })

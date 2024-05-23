@@ -115,7 +115,7 @@ vim.keymap.set("n", "<C-w>D", "<cmd>bdelete<CR>")
 -- Titles
 vim.keymap.set({ "n", "v" }, "<Leader>cb", "<Cmd>CBccbox<CR>")
 -- Named parts
-vim.keymap.set({ "n", "v" }, "<Leader>ct", "<Cmd>CBlcline<CR>")
+vim.keymap.set({ "n", "v" }, "<Leader>ct", "<Cmd>CBlcline2<CR>")
 -- Simple line
 vim.keymap.set("n", "<Leader>cl", "<Cmd>CBline<CR>")
 -- keymap("i", "<M-l>", "<Cmd>CBline<CR>", opts) -- To use in Insert Mode
