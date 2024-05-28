@@ -16,6 +16,11 @@ return require("packer").startup(function(use)
 
 	use({ "catppuccin/nvim", as = "catppuccin" })
 	use("rose-pine/neovim")
+	use("rebelot/kanagawa.nvim")
+	use({ "ellisonleao/gruvbox.nvim" })
+	use({ "kepano/flexoki-neovim", as = "flexoki" })
+	use({ "nyoom-engineering/oxocarbon.nvim" })
+	vim.cmd("colorscheme oxocarbon")
 
 	use("nvim-treesitter/nvim-treesitter", { run = ":TSUpdate" })
 
@@ -39,7 +44,7 @@ return require("packer").startup(function(use)
 	use("rafamadriz/friendly-snippets")
 
 	use("SirVer/ultisnips")
-	use("quangnguyen30192/cmp-nvim-ultisnips")
+	-- use("quangnguyen30192/cmp-nvim-ultisnips")
 
 	use({
 		"nvim-tree/nvim-tree.lua",

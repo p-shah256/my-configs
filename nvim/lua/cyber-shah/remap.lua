@@ -110,17 +110,13 @@ vim.keymap.set("n", "<leader>lg", "<cmd>LazyGit<cr>", { desc = "[l]azy [g]it" })
 vim.keymap.set("n", "<leader>fm", "<cmd>set foldmethod=manual<cr>", { desc = "[f]old [m]anual" })
 vim.keymap.set("n", "<leader>fi", "<cmd>set foldmethod=indent<cr>", { desc = "[f]old [i]ndent" })
 
-vim.keymap.set("n", "<C-w>D", "<cmd>bdelete<CR>")
+vim.keymap.set("n", "<C-w>D", "<cmd>bdelete<CR>", { desc = "[b]uffer [D]elete" })
 
--- Titles
-vim.keymap.set({ "n", "v" }, "<Leader>cb", "<Cmd>CBccbox<CR>")
--- Named parts
-vim.keymap.set({ "n", "v" }, "<Leader>ct", "<Cmd>CBlcline2<CR>")
--- Simple line
-vim.keymap.set("n", "<Leader>cl", "<Cmd>CBline<CR>")
--- keymap("i", "<M-l>", "<Cmd>CBline<CR>", opts) -- To use in Insert Mode
--- Marked comments
-vim.keymap.set({ "n", "v" }, "<Leader>cm", "<Cmd>CBllbox14<CR>")
--- Removing a box is simple enough with the command (CBd), but if you
--- use it a lot:
--- keymap({ "n", "v" }, "<Leader>cd", "<Cmd>CBd<CR>", opts)
+vim.keymap.set({ "n", "v" }, "<Leader>cb", "<Cmd>CBccbox<CR>", { desc = "[c]omment [b]ox" })
+vim.keymap.set({ "n", "v" }, "<Leader>ct", "<Cmd>CBlcline2<CR>", { desc = "[c]omment [t]itle" })
+vim.keymap.set("n", "<Leader>cl", "<Cmd>CBline<CR>", { desc = "[c]omment [l]ine" })
+vim.keymap.set({ "n", "v" }, "<Leader>cq", "<Cmd>CBllbox18<CR>", { desc = "[c]omment [q]uote" })
+vim.keymap.set("n", "<leader>cn", "/\\S\\zs\\s*╭<CR>zt", { desc = "[c]omment [n]ext" })
+vim.keymap.set("n", "<leader>cN", "?\\S\\zs\\s*╭<CR>zt", { desc = "[c]omment [N] previous" })
+
+vim.keymap.set("n", "<leader>n", "<cmd>Navbuddy<cr>", { desc = "[N]avbuddy" })

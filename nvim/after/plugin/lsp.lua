@@ -7,6 +7,7 @@ lspconfig.lua_ls.setup({})
 lspconfig.pyright.setup({
 	on_attach = function(client, bufnr)
 		print("pyright signature attach")
+		navbuddy.attach(client, bufnr)
 		require("lsp_signature").on_attach(signature_setup, bufnr) -- Note: add in lsp client on-attach
 	end,
 })
@@ -17,6 +18,19 @@ lspconfig.tsserver.setup({
 		navbuddy.attach(client, bufnr)
 		require("lsp_signature").on_attach(signature_setup, bufnr) -- Note: add in lsp client on-attach
 	end,
+})
+
+lspconfig.gopls.setup({
+	on_attach = function(client, bufnr)
+		print("go pls attach")
+		navbuddy.attach(client, bufnr)
+		require("lsp_signature").on_attach(signature_setup, bufnr) -- Note: add in lsp client on-attach
+	end,
+	settings = {
+		gopls = {
+			gofumpt = true,
+		},
+	},
 })
 
 lspconfig.rust_analyzer.setup({
