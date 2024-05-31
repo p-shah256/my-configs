@@ -112,8 +112,10 @@ vim.keymap.set("n", "<leader>fi", "<cmd>set foldmethod=indent<cr>", { desc = "[f
 
 vim.keymap.set("n", "<C-w>D", "<cmd>bdelete<CR>", { desc = "[b]uffer [D]elete" })
 
+vim.keymap.set({ "n", "v" }, "<Leader>cB", "<Cmd>CBccbox7<CR>", { desc = "[c]omment [d]ouble box" })
 vim.keymap.set({ "n", "v" }, "<Leader>cb", "<Cmd>CBccbox<CR>", { desc = "[c]omment [b]ox" })
 vim.keymap.set({ "n", "v" }, "<Leader>ct", "<Cmd>CBlcline2<CR>", { desc = "[c]omment [t]itle" })
+vim.keymap.set({ "n", "v" }, "<Leader>cc", "<Cmd>CBlcline15<CR>", { desc = "[c]omment [c]omment" })
 vim.keymap.set("n", "<Leader>cl", "<Cmd>CBline<CR>", { desc = "[c]omment [l]ine" })
 vim.keymap.set({ "n", "v" }, "<Leader>cq", "<Cmd>CBllbox18<CR>", { desc = "[c]omment [q]uote" })
 vim.keymap.set("n", "<leader>cn", "/\\S\\zs\\s*╭<CR>zt", { desc = "[c]omment [n]ext" })
