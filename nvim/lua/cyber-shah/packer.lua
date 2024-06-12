@@ -126,4 +126,8 @@ return require("packer").startup(function(use)
 			"nvim-telescope/telescope.nvim", -- Optional
 		},
 	})
+
+	-- GIT TOOLS
+	use("lewis6991/gitsigns.nvim")
+	use("tpope/vim-fugitive")
 end)

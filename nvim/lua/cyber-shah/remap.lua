@@ -121,4 +121,6 @@ vim.keymap.set({ "n", "v" }, "<Leader>cq", "<Cmd>CBllbox18<CR>", { desc = "[c]om
 vim.keymap.set("n", "<leader>cn", "/\\S\\zs\\s*╭<CR>zt", { desc = "[c]omment [n]ext" })
 vim.keymap.set("n", "<leader>cN", "?\\S\\zs\\s*╭<CR>zt", { desc = "[c]omment [N] previous" })
 
-vim.keymap.set("n", "<leader>n", "<cmd>Navbuddy<cr>", { desc = "[N]avbuddy" })
+-- vim.keymap.set("n", "<leader>n", "<cmd>Navbuddy<cr>", { desc = "[N]avbuddy" })
+
+vim.keymap.set("n", "<leader>lj", "<cmd>%!jq .<cr>", { desc = "[l]sp format [j]son (uses `jq`)" })
