@@ -8,6 +8,7 @@ require("conform").setup({
 		typescript = { { "prettierd", "prettier" } },
 		markdown = { { "prettierd", "prettier" } },
 		go = { { "gofmt" } },
+		json = { { "prettierd", "prettier" } },
 	},
 })
 
