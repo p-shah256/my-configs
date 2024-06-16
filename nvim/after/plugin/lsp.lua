@@ -2,43 +2,91 @@
 local lspconfig = require("lspconfig")
 local navbuddy = require("nvim-navbuddy")
 
-lspconfig.lua_ls.setup({})
+local function on_attach(client, bufnr)
+	navbuddy.attach(client, bufnr)
+	require("lsp_signature").on_attach(signature_setup, bufnr)
+end
 
-lspconfig.pyright.setup({
-	on_attach = function(client, bufnr)
-		print("pyright signature attach")
-		navbuddy.attach(client, bufnr)
-		require("lsp_signature").on_attach(signature_setup, bufnr) -- Note: add in lsp client on-attach
-	end,
-})
-
-lspconfig.tsserver.setup({
-	on_attach = function(client, bufnr)
-		print("ts signature attach")
-		navbuddy.attach(client, bufnr)
-		require("lsp_signature").on_attach(signature_setup, bufnr) -- Note: add in lsp client on-attach
-	end,
-})
-
-lspconfig.gopls.setup({
-	on_attach = function(client, bufnr)
-		print("go pls attach")
-		navbuddy.attach(client, bufnr)
-		require("lsp_signature").on_attach(signature_setup, bufnr) -- Note: add in lsp client on-attach
-	end,
-	settings = {
-		gopls = {
-			gofumpt = true,
+-- List of language servers to setup
+local servers = {
+	{
+		lsp = lspconfig.lua_ls,
+		config = {},
+	},
+	{
+		lsp = lspconfig.clangd,
+		config = {
+			on_attach = on_attach,
 		},
 	},
-})
-
-lspconfig.rust_analyzer.setup({
-	-- Server-specific settings. See `:help lspconfig-setup`
-	settings = {
-		["rust-analyzer"] = {},
+	{
+		lsp = lspconfig.pyright,
+		config = {
+			on_attach = on_attach,
+		},
 	},
-})
+	{
+		lsp = lspconfig.tsserver,
+		config = {
+			on_attach = on_attach,
+		},
+	},
+	{
+		lsp = lspconfig.gopls,
+		config = {
+			on_attach = on_attach,
+		},
+	},
+}
+
+-- Setup each language server
+for _, server in ipairs(servers) do
+	server.lsp.setup(server.config)
+end
+--
+-- lspconfig.lua_ls.setup({})
+--
+-- lspconfig.clangd.setup({
+-- 	on_attach = function(client, bufnr)
+-- 		navbuddy.attach(client, bufnr)
+-- 		require("lsp_signature").on_attach(signature_setup, bufnr)
+-- 	end,
+-- })
+--
+-- lspconfig.pyright.setup({
+-- 	on_attach = function(client, bufnr)
+-- 		navbuddy.attach(client, bufnr)
+-- 		require("lsp_signature").on_attach(signature_setup, bufnr)
+-- 	end,
+-- })
+--
+-- lspconfig.tsserver.setup({
+-- 	on_attach = function(client, bufnr)
+-- 		print("ts signature attach")
+-- 		navbuddy.attach(client, bufnr)
+-- 		require("lsp_signature").on_attach(signature_setup, bufnr) -- Note: add in lsp client on-attach
+-- 	end,
+-- })
+--
+-- lspconfig.gopls.setup({
+-- 	on_attach = function(client, bufnr)
+-- 		print("go pls attach")
+-- 		navbuddy.attach(client, bufnr)
+-- 		require("lsp_signature").on_attach(signature_setup, bufnr) -- Note: add in lsp client on-attach
+-- 	end,
+-- 	settings = {
+-- 		gopls = {
+-- 			gofumpt = true,
+-- 		},
+-- 	},
+-- })
+--
+-- lspconfig.rust_analyzer.setup({
+-- 	-- Server-specific settings. See `:help lspconfig-setup`
+-- 	settings = {
+-- 		["rust-analyzer"] = {},
+-- 	},
+-- })
 
 vim.api.nvim_create_autocmd("LspAttach", {
 	group = vim.api.nvim_create_augroup("kickstart-lsp-attach", { clear = true }),

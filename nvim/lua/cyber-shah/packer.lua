@@ -127,10 +127,6 @@ return require("packer").startup(function(use)
 		},
 	})
 
-	use({
-		"nvim-lualine/lualine.nvim",
-		requires = { "nvim-tree/nvim-web-devicons", opt = true },
-	})
 	-- GIT TOOLS
 	use("lewis6991/gitsigns.nvim")
 	use("tpope/vim-fugitive")
