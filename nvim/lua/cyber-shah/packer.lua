@@ -20,7 +20,7 @@ return require("packer").startup(function(use)
 	use({ "ellisonleao/gruvbox.nvim" })
 	use({ "kepano/flexoki-neovim", as = "flexoki" })
 	use({ "nyoom-engineering/oxocarbon.nvim" })
-	vim.cmd("colorscheme oxocarbon")
+	-- vim.cmd("colorscheme oxocarbon")
 
 	use("nvim-treesitter/nvim-treesitter", { run = ":TSUpdate" })
 
@@ -125,6 +125,17 @@ return require("packer").startup(function(use)
 			"numToStr/Comment.nvim", -- Optional
 			"nvim-telescope/telescope.nvim", -- Optional
 		},
+	})
+
+	use({
+		"nvim-lualine/lualine.nvim",
+		requires = { "nvim-tree/nvim-web-devicons", opt = true },
+	})
+	use("EdenEast/nightfox.nvim")
+
+	use({
+		"m4xshen/hardtime.nvim",
+		requires = { "MunifTanjim/nui.nvim", "nvim-lua/plenary.nvim" },
 	})
 
 	-- GIT TOOLS
