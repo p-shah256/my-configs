@@ -14,8 +14,6 @@ vim.g.have_nerd_font = true
 
 -- Make line numbers default
 vim.opt.number = true
--- You can also add relative line numbers, to help with jumping.
---  Experiment for yourself to see if you like it!
 vim.opt.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
@@ -32,9 +30,11 @@ vim.opt.foldmethod = "expr"
 vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
 vim.opt.foldenable = true
 vim.opt.foldlevel = 99  -- Start with all folds open
+
 -- Simple clean fold appearance
 vim.opt.fillchars = { fold = " " }
 vim.opt.foldtext = [[substitute(getline(v:foldstart),'\\t',repeat('\ ',&tabstop),'g').' ...']]
+
 -- Optional: jump between folds
 -- vim.keymap.set('n', '}', 'zj')
 -- vim.keymap.set('n', '{', 'zk')
@@ -43,9 +43,9 @@ vim.opt.foldtext = [[substitute(getline(v:foldstart),'\\t',repeat('\ ',&tabstop)
 
 
 -- Sync clipboard between OS and Neovim.
---  Schedule the setting after `UiEnter` because it can increase startup-time.
---  Remove this option if you want your OS clipboard to remain independent.
---  See `:help 'clipboard'`
+-- Schedule the setting after `UiEnter` because it can increase startup-time.
+-- Remove this option if you want your OS clipboard to remain independent.
+-- See `:help 'clipboard'`
 vim.schedule(function()
   vim.opt.clipboard = 'unnamedplus'
 end)
@@ -88,5 +88,42 @@ vim.opt.cursorline = true
 
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 10
+
+
+vim.diagnostic.config({
+  float = {
+    source = true,
+    border = "rounded",
+    focus = false,
+    scope = "cursor",
+    header = "",
+    prefix = "",
+  },
+  virtual_text = false,
+})
+vim.o.updatetime = 250
+vim.cmd [[autocmd! CursorHold,CursorHoldI * lua vim.diagnostic.open_float(nil, {focus=false})]]
+
+
+-- FONT CONFIG // CUSTOM
+vim.cmd([[
+  syntax enable
+  set termguicolors
+]])
+-- Basic settings
+vim.opt.number = true
+vim.opt.relativenumber = true
+vim.opt.cursorline = true
+vim.opt.wrap = false
+vim.opt.scrolloff = 8
+vim.opt.signcolumn = "yes"
+vim.opt.expandtab = true
+vim.opt.shiftwidth = 2
+vim.opt.tabstop = 2
+vim.opt.smartindent = true
+
+-- Highlights
+vim.api.nvim_command('highlight Comment cterm=italic gui=italic guifg=#777777')
+vim.api.nvim_command('highlight Function cterm=bold gui=bold guifg=#87afff')
 
 

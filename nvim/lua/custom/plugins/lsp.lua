@@ -84,6 +84,18 @@ return {
     capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
 
     local servers = {
+      pyright = {
+        settings = {
+          python = {
+            pythonPath = vim.fn.system('poetry run which python'):gsub('%s+', ''),
+            venvPath = '.',
+            poetryPath = vim.fn.system('which poetry'):gsub('%s+', ''),
+          },
+        },
+        on_init = function(client)
+          print('Poetry path:', client.config.settings.python.poetryPath)
+        end,
+      },
       clangd = {},
       -- gopls = {},
       ts_ls = {
