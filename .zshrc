@@ -112,3 +112,18 @@ autoload -U compinit && compinit
 
 export EDITOR=vim
 export PATH="$HOME/go/bin:$PATH"
+
+export SSH_AUTH_SOCK=~/.ssh/ssh-agent.sock
+if [[ ! -d ~/.ssh ]]; then
+  mkdir -p ~/.ssh
+fi
+
+
+# More robust agent check and startup
+if ! ps -ef | grep -v grep | grep ssh-agent > /dev/null; then
+  rm -f $SSH_AUTH_SOCK
+  eval $(ssh-agent -s -a $SSH_AUTH_SOCK)
+elif [[ ! -S "$SSH_AUTH_SOCK" ]]; then
+  rm -f $SSH_AUTH_SOCK
+  eval $(ssh-agent -s -a $SSH_AUTH_SOCK)
+fi
