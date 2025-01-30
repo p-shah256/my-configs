@@ -3,9 +3,24 @@ return {
   dependencies = {
     { 'williamboman/mason.nvim', config = true },
     'williamboman/mason-lspconfig.nvim',
+<<<<<<< HEAD
     'WhoIsSethDaniel/mason-tool-installer.nvim',
     { 'j-hui/fidget.nvim', opts = {} }, -- Useful status updates for LSP.
     { 'hrsh7th/nvim-cmp', dependencies = { 'hrsh7th/cmp-buffer', 'hrsh7th/cmp-path' } },
+=======
+    'p00f/clangd_extensions.nvim',
+    'WhoIsSethDaniel/mason-tool-installer.nvim',
+    { 'j-hui/fidget.nvim', opts = {} }, -- Useful status updates for LSP.
+    { 'hrsh7th/nvim-cmp', dependencies = { 'hrsh7th/cmp-buffer', 'hrsh7th/cmp-path' } },
+    'SmiteshP/nvim-navic',
+    {
+      'SmiteshP/nvim-navbuddy',
+      dependencies = {
+        'SmiteshP/nvim-navic',
+        'MunifTanjim/nui.nvim',
+      },
+    },
+>>>>>>> 8683a94 (updates)
   },
   config = function()
     vim.api.nvim_create_autocmd('LspAttach', {
@@ -29,6 +44,17 @@ return {
         map('<C-k>', vim.lsp.buf.signature_help, 'Signature Help')
 
         local client = vim.lsp.get_client_by_id(event.data.client_id)
+<<<<<<< HEAD
+=======
+        if client and client.server_capabilities.documentSymbolProvider then
+          require('nvim-navic').attach(client, event.buf)
+          print 'Navic attached! 🎯' -- Add this line
+        end
+        if client then
+          print('LSP Client:', client.name)
+          print('Has documentSymbolProvider:', client.server_capabilities.documentSymbolProvider)
+        end
+>>>>>>> 8683a94 (updates)
         if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight) then
           local highlight_augroup = vim.api.nvim_create_augroup('kickstart-lsp-highlight', { clear = false })
           vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, { -- highlight types whenever we move our cursor on it
@@ -87,6 +113,7 @@ return {
       pyright = {
         settings = {
           python = {
+<<<<<<< HEAD
             pythonPath = vim.fn.system('poetry run which python'):gsub('%s+', ''),
             venvPath = '.',
             poetryPath = vim.fn.system('which poetry'):gsub('%s+', ''),
@@ -98,6 +125,40 @@ return {
       },
       clangd = {},
       -- gopls = {},
+=======
+            pythonPath = vim.fn.getcwd() .. '/.venv/bin/python', -- Path to your virtual environment's Python
+            venvPath = vim.fn.getcwd() .. '/.venv', -- Path to your virtual environment
+          },
+        },
+        on_init = function(client)
+          print('Python path:', client.config.settings.python.pythonPath)
+          print('Venv path:', client.config.settings.python.venvPath)
+        end,
+      },
+      clangd = {
+        cmd = {
+          '/run/current-system/sw/bin/clangd',
+          '--log=verbose',
+          -- '--header-insertion=never', -- Stop it from getting too creative with includes
+          '--completion-style=detailed',
+        },
+        root_dir = function()
+          -- Tell clangd to look from the project root
+          return vim.fn.getcwd()
+        end,
+      },
+      gopls = {
+        capabilities = capabilities, -- Make sure it gets all our fancy capabilities
+        settings = {
+          gopls = {
+            usePlaceholders = true,
+            analyses = {
+              unusedparams = true,
+            },
+          },
+        },
+      },
+>>>>>>> 8683a94 (updates)
       ts_ls = {
         settings = {
           typescript = {
@@ -141,7 +202,13 @@ return {
 
     require('mason-lspconfig').setup {
       ensure_installed = {},
+<<<<<<< HEAD
       automatic_installation = {},
+=======
+      automatic_installation = {
+        exclude = { 'clangd' }, -- Tell Mason to leave clangd alone
+      },
+>>>>>>> 8683a94 (updates)
       handlers = {
         function(server_name)
           local server = servers[server_name] or {}
@@ -150,5 +217,26 @@ return {
         end,
       },
     }
+<<<<<<< HEAD
+=======
+
+    require('nvim-navic').setup {
+      highlight = true,
+      lsp = {
+        auto_attach = true,
+        preference = nil,
+      },
+    }
+    require('nvim-navbuddy').setup {
+      window = {
+        border = 'rounded', -- Smooth edges, we're not barbarians!
+        size = '60%', -- Let's make it visible enough
+        position = '50%', -- Center it like a boss
+      },
+      lsp = {
+        auto_attach = true, -- Let it automatically attach to LSP servers
+      },
+    }
+>>>>>>> 8683a94 (updates)
   end,
 }
