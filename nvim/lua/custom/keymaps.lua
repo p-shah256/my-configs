@@ -35,9 +35,6 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
-<<<<<<< HEAD
-
-=======
 vim.keymap.set('x', '<leader>w', function()
     local char = vim.fn.getchar()
     char = vim.fn.nr2char(char)
@@ -46,4 +43,3 @@ vim.keymap.set('x', '<leader>w', function()
     local cmd = '`<i' .. char .. '<esc>`>a' .. char .. '<esc>'
     vim.cmd('normal! ' .. cmd)
 end, { desc = 'Wrap selection with character' })
->>>>>>> 8683a94 (updates)

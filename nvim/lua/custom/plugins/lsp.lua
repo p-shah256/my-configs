@@ -3,11 +3,6 @@ return {
   dependencies = {
     { 'williamboman/mason.nvim', config = true },
     'williamboman/mason-lspconfig.nvim',
-<<<<<<< HEAD
-    'WhoIsSethDaniel/mason-tool-installer.nvim',
-    { 'j-hui/fidget.nvim', opts = {} }, -- Useful status updates for LSP.
-    { 'hrsh7th/nvim-cmp', dependencies = { 'hrsh7th/cmp-buffer', 'hrsh7th/cmp-path' } },
-=======
     'p00f/clangd_extensions.nvim',
     'WhoIsSethDaniel/mason-tool-installer.nvim',
     { 'j-hui/fidget.nvim', opts = {} }, -- Useful status updates for LSP.
@@ -20,7 +15,6 @@ return {
         'MunifTanjim/nui.nvim',
       },
     },
->>>>>>> 8683a94 (updates)
   },
   config = function()
     vim.api.nvim_create_autocmd('LspAttach', {
@@ -44,8 +38,6 @@ return {
         map('<C-k>', vim.lsp.buf.signature_help, 'Signature Help')
 
         local client = vim.lsp.get_client_by_id(event.data.client_id)
-<<<<<<< HEAD
-=======
         if client and client.server_capabilities.documentSymbolProvider then
           require('nvim-navic').attach(client, event.buf)
           print 'Navic attached! 🎯' -- Add this line
@@ -54,7 +46,6 @@ return {
           print('LSP Client:', client.name)
           print('Has documentSymbolProvider:', client.server_capabilities.documentSymbolProvider)
         end
->>>>>>> 8683a94 (updates)
         if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight) then
           local highlight_augroup = vim.api.nvim_create_augroup('kickstart-lsp-highlight', { clear = false })
           vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, { -- highlight types whenever we move our cursor on it
@@ -113,19 +104,6 @@ return {
       pyright = {
         settings = {
           python = {
-<<<<<<< HEAD
-            pythonPath = vim.fn.system('poetry run which python'):gsub('%s+', ''),
-            venvPath = '.',
-            poetryPath = vim.fn.system('which poetry'):gsub('%s+', ''),
-          },
-        },
-        on_init = function(client)
-          print('Poetry path:', client.config.settings.python.poetryPath)
-        end,
-      },
-      clangd = {},
-      -- gopls = {},
-=======
             pythonPath = vim.fn.getcwd() .. '/.venv/bin/python', -- Path to your virtual environment's Python
             venvPath = vim.fn.getcwd() .. '/.venv', -- Path to your virtual environment
           },
@@ -158,7 +136,6 @@ return {
           },
         },
       },
->>>>>>> 8683a94 (updates)
       ts_ls = {
         settings = {
           typescript = {
@@ -202,13 +179,9 @@ return {
 
     require('mason-lspconfig').setup {
       ensure_installed = {},
-<<<<<<< HEAD
-      automatic_installation = {},
-=======
       automatic_installation = {
         exclude = { 'clangd' }, -- Tell Mason to leave clangd alone
       },
->>>>>>> 8683a94 (updates)
       handlers = {
         function(server_name)
           local server = servers[server_name] or {}
@@ -217,8 +190,6 @@ return {
         end,
       },
     }
-<<<<<<< HEAD
-=======
 
     require('nvim-navic').setup {
       highlight = true,
@@ -237,6 +208,5 @@ return {
         auto_attach = true, -- Let it automatically attach to LSP servers
       },
     }
->>>>>>> 8683a94 (updates)
   end,
 }

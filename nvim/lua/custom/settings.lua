@@ -3,10 +3,7 @@
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
-<<<<<<< HEAD
-=======
 vim.opt.clipboard = "unnamedplus"  -- Use the system clipboard for all operations
->>>>>>> 8683a94 (updates)
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = true
@@ -131,8 +128,6 @@ vim.api.nvim_command('highlight Comment cterm=italic gui=italic guifg=#777777')
 vim.api.nvim_command('highlight Function cterm=bold gui=bold guifg=#87afff')
 
 
-<<<<<<< HEAD
-=======
 -- Add this to your Neovim config
 vim.filetype.add({
     extension = {
@@ -141,4 +136,3 @@ vim.filetype.add({
 })
 
 vim.g.gitblame_delay = 2000
->>>>>>> 8683a94 (updates)
