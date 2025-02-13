@@ -40,11 +40,11 @@ return {
         local client = vim.lsp.get_client_by_id(event.data.client_id)
         if client and client.server_capabilities.documentSymbolProvider then
           require('nvim-navic').attach(client, event.buf)
-          print 'Navic attached! 🎯' -- Add this line
+          -- print 'Navic attached! 🎯' -- Add this line
         end
         if client then
-          print('LSP Client:', client.name)
-          print('Has documentSymbolProvider:', client.server_capabilities.documentSymbolProvider)
+          -- print('LSP Client:', client.name)
+          -- print('Has documentSymbolProvider:', client.server_capabilities.documentSymbolProvider)
         end
         if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight) then
           local highlight_augroup = vim.api.nvim_create_augroup('kickstart-lsp-highlight', { clear = false })
