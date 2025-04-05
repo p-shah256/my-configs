@@ -12,9 +12,9 @@ return {
       insert_at_start = true,
     },
     keys = {
-      { '<A-,>', '<Cmd>BufferPrevious<CR>', desc = 'Go to previous buffer' },
-      { '<A-.>', '<Cmd>BufferNext<CR>', desc = 'Go to next buffer' },
-      { '<A-c>', '<Cmd>BufferClose<CR>', desc = 'Close current buffer' },
+    { '<S-h>', '<Cmd>BufferPrevious<CR>', desc = 'Go to previous buffer' },
+    { '<S-l>', '<Cmd>BufferNext<CR>', desc = 'Go to next buffer' },
+    { '<S-c>', '<Cmd>BufferClose<CR>', desc = 'Close current buffer' },
     },
     version = '^1.0.0', -- optional: only update when a new 1.x version is released
     -- Previous/next buffer

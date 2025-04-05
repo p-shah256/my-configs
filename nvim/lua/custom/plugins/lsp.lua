@@ -104,22 +104,21 @@ return {
       pyright = {
         settings = {
           python = {
-            pythonPath = vim.fn.getcwd() .. '/.venv/bin/python', -- Path to your virtual environment's Python
-            venvPath = vim.fn.getcwd() .. '/.venv', -- Path to your virtual environment
+            analysis = {
+              autoSearchPaths = true,
+              useLibraryCodeForTypes = true,
+              diagnosticMode = 'workspace',
+            },
+            -- Don't hardcode paths, let Pyright find them
+            -- It'll check common patterns like venv, .venv, env, etc.
           },
         },
         on_init = function(client)
-          print('Python path:', client.config.settings.python.pythonPath)
-          print('Venv path:', client.config.settings.python.venvPath)
+          local config = client.config.settings.python
+          print('Python settings:', vim.inspect(config))
         end,
       },
       clangd = {
-        cmd = {
-          '/run/current-system/sw/bin/clangd',
-          '--log=verbose',
-          -- '--header-insertion=never', -- Stop it from getting too creative with includes
-          '--completion-style=detailed',
-        },
         root_dir = function()
           -- Tell clangd to look from the project root
           return vim.fn.getcwd()
