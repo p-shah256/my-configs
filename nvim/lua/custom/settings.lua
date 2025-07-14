@@ -111,8 +111,9 @@ vim.opt.wrap = false
 vim.opt.scrolloff = 8
 vim.opt.signcolumn = 'yes'
 vim.opt.expandtab = true
-vim.opt.shiftwidth = 2
-vim.opt.tabstop = 2
+vim.opt.tabstop = 4      -- Number of spaces a tab counts for
+vim.opt.shiftwidth = 4   -- Number of spaces for each indentation level
+vim.opt.softtabstop = 4  -- Number of spaces for tab in insert mode
 vim.opt.smartindent = true
 
 -- Highlights
@@ -126,22 +127,23 @@ vim.filetype.add {
   },
 }
 
-vim.api.nvim_create_autocmd('FileType', {
-  pattern = 'go',
-  callback = function()
-    vim.bo.tabstop = 4
-    vim.bo.shiftwidth = 4
-    vim.bo.expandtab = true
-  end,
-})
-
-vim.api.nvim_create_autocmd('FileType', {
-  pattern = { 'c', 'cpp' },
-  callback = function()
-    vim.bo.tabstop = 4
-    vim.bo.shiftwidth = 4
-    vim.bo.expandtab = true
-  end,
-})
+--
+-- vim.api.nvim_create_autocmd('FileType', {
+--   pattern = 'go',
+--   callback = function()
+--     vim.bo.tabstop = 4
+--     vim.bo.shiftwidth = 4
+--     vim.bo.expandtab = true
+--   end,
+-- })
+--
+-- vim.api.nvim_create_autocmd('FileType', {
+--   pattern = { 'c', 'cpp' },
+--   callback = function()
+--     vim.bo.tabstop = 4
+--     vim.bo.shiftwidth = 4
+--     vim.bo.expandtab = true
+--   end,
+-- })
 
 vim.g.gitblame_delay = 2000

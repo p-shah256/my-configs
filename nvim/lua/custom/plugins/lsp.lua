@@ -1,31 +1,59 @@
 return {
-  'neovim/nvim-lspconfig',
+  'neovim/nvim-lspconfig', -- Primary plugin for LSP client configurations
   dependencies = {
-    { 'williamboman/mason.nvim', config = true },
-    'williamboman/mason-lspconfig.nvim',
-    'p00f/clangd_extensions.nvim',
-    'WhoIsSethDaniel/mason-tool-installer.nvim',
-    { 'j-hui/fidget.nvim', opts = {} }, -- Useful status updates for LSP.
-    { 'hrsh7th/nvim-cmp', dependencies = { 'hrsh7th/cmp-buffer', 'hrsh7th/cmp-path' } },
-    'SmiteshP/nvim-navic',
+    -- LSP Server and Tool Installation/Management
+    { 'williamboman/mason.nvim', config = true }, -- Manages LSP servers, linters, formatters
+    'williamboman/mason-lspconfig.nvim', -- Integrates Mason with nvim-lspconfig
+    'WhoIsSethDaniel/mason-tool-installer.nvim', -- Automatically installs Mason tools based on detected language servers
+
+    -- LSP Enhancements & Utilities
+    'p00f/clangd_extensions.nvim', -- Provides additional features for clangd (e.g., AST highlighting).
+    -- Make sure to configure this if you plan to use its features.
+    { 'j-hui/fidget.nvim', opts = {} }, -- Provides subtle status updates for LSP actions (e.g., "LSP: Initializing").
+
+    -- Autocompletion
     {
-      'SmiteshP/nvim-navbuddy',
+      'hrsh7th/nvim-cmp', -- The main completion plugin
       dependencies = {
-        'SmiteshP/nvim-navic',
-        'MunifTanjim/nui.nvim',
+        'hrsh7th/cmp-buffer', -- Source for buffer words
+        'hrsh7th/cmp-path', -- Source for file system paths
+        'hrsh7th/cmp-nvim-lsp', -- Source for LSP suggestions (crucial for LSP completion)
+      },
+    },
+
+    -- Code Navigation & Structure
+    'SmiteshP/nvim-navic', -- Displays the current code context (like breadcrumbs) in the statusline
+
+    -- Top context
+    {
+      'nvim-treesitter/nvim-treesitter-context',
+      opts = {
+        max_lines = 3, -- How much is too much?
+        min_window_height = 5,
+        multiline_threshold = 1, -- Minimum lines needed for multi-line context
       },
     },
   },
   config = function()
+    -- {{{ General LSP Configuration and Autocmds
+
+    -- Set the highlight group for Inlay Hints.
+    -- This makes inlay hints appear in a specific color (fg) and italic.
+    -- Adjust 'fg' (foreground color) and 'italic' as per your theme preference.
+    vim.api.nvim_set_hl(0, 'LspInlayHint', { fg = '#7f849c', bg = 'none', italic = true })
+
+    -- Autocommand for 'LspAttach' event.
+    -- This block defines actions to take whenever an LSP client attaches to a buffer.
     vim.api.nvim_create_autocmd('LspAttach', {
       group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
       callback = function(event)
+        -- Helper function to create buffer-local keymaps
         local map = function(keys, func, desc, mode)
-          mode = mode or 'n'
+          mode = mode or 'n' -- Default to normal mode
           vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
         end
 
-        --  To jump back, press <C-t>.
+        -- Keymaps for common LSP functionalities:
         map('gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
         map('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
         map('gI', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
@@ -33,33 +61,39 @@ return {
         map('<leader>ds', require('telescope.builtin').lsp_document_symbols, '[D]ocument [S]ymbols')
         map('<leader>ws', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[W]orkspace [S]ymbols')
         map('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
-        map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction', { 'n', 'x' })
+        map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction', { 'n', 'x' }) -- Works in normal and visual mode
         map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
         map('<C-k>', vim.lsp.buf.signature_help, 'Signature Help')
 
         local client = vim.lsp.get_client_by_id(event.data.client_id)
+
+        -- Integrate nvim-navic (breadcrumbs) with the LSP client
+        -- Checks if the client supports 'documentSymbolProvider' before attaching.
+        -- Note: nvim-navic's `auto_attach = true` in its `setup` might make this line redundant,
+        -- but it's safe to keep for explicit attachment.
         if client and client.server_capabilities.documentSymbolProvider then
           require('nvim-navic').attach(client, event.buf)
-          -- print 'Navic attached! 🎯' -- Add this line
         end
-        if client then
-          -- print('LSP Client:', client.name)
-          -- print('Has documentSymbolProvider:', client.server_capabilities.documentSymbolProvider)
-        end
+
+        -- Document Highlights: Highlight all references to the symbol under the cursor.
         if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight) then
           local highlight_augroup = vim.api.nvim_create_augroup('kickstart-lsp-highlight', { clear = false })
-          vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, { -- highlight types whenever we move our cursor on it
+
+          -- Highlight references when the cursor holds (stops moving)
+          vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
             buffer = event.buf,
             group = highlight_augroup,
             callback = vim.lsp.buf.document_highlight,
           })
 
-          vim.api.nvim_create_autocmd({ 'CursorMoved', 'CursorMovedI' }, { -- When you move your cursor, the highlights will be cleared
+          -- Clear highlights when the cursor moves
+          vim.api.nvim_create_autocmd({ 'CursorMoved', 'CursorMovedI' }, {
             buffer = event.buf,
             group = highlight_augroup,
             callback = vim.lsp.buf.clear_references,
           })
 
+          -- Clear highlights and remove autocmds when LSP detaches from the buffer
           vim.api.nvim_create_autocmd('LspDetach', {
             group = vim.api.nvim_create_augroup('kickstart-lsp-detach', { clear = true }),
             callback = function(event2)
@@ -68,6 +102,8 @@ return {
             end,
           })
 
+          -- Code Lens Refresh: Refresh code lenses (e.g., "run test", "references")
+          -- This often happens on buffer entry, cursor hold, or leaving insert mode.
           if client.server_capabilities.codeLensProvider then
             vim.api.nvim_create_autocmd({ 'BufEnter', 'CursorHold', 'InsertLeave' }, {
               group = highlight_augroup,
@@ -76,7 +112,12 @@ return {
           end
         end
 
-        if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint) then -- INLAY HINTS
+        -- Inlay Hints: Contextual information displayed inline in the code (e.g., parameter names, variable types).
+        if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint) then
+          -- Enable inlay hints by default for this buffer if the LSP client supports them.
+          vim.lsp.inlay_hint.enable(true, { bufnr = event.buf })
+
+          -- Keymap to toggle inlay hints on/off for the current buffer.
           map('<leader>th', function()
             vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf })
           end, '[T]oggle Inlay [H]ints')
@@ -84,8 +125,10 @@ return {
       end,
     })
 
-    -- Change diagnostic symbols in the sign column (gutter)
-    vim.opt.signcolumn = 'yes'
+    -- Diagnostic Configuration: Visual indicators for errors, warnings, etc.
+    vim.opt.signcolumn = 'yes' -- Always show the sign column to prevent text jumping
+
+    -- Use Nerd Font symbols for diagnostics if available
     if vim.g.have_nerd_font then
       local signs = { ERROR = '', WARN = '', INFO = '', HINT = '' }
       local diagnostic_signs = {}
@@ -94,102 +137,146 @@ return {
       end
       vim.diagnostic.config { signs = { text = diagnostic_signs } }
     end
+    -- }}}
 
-    --  When you add nvim-cmp, luasnip, etc. Neovim now has *more* capabilities.
-    --  So, we create new capabilities with nvim cmp, and then broadcast that to the servers.
+    -- Updated configuration for mason-lspconfig v2.0.0
+    -- Replace the entire "LSP Client Capabilities & Server Configurations" section with this:
+
+    -- {{{ LSP Client Capabilities & Server Configurations
+
+    -- Define LSP client capabilities.
+    -- This extends default LSP capabilities with those provided by nvim-cmp for better completion.
     local capabilities = vim.lsp.protocol.make_client_capabilities()
     capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
 
-    local servers = {
-      pyright = {
-        settings = {
-          python = {
-            analysis = {
-              autoSearchPaths = true,
-              useLibraryCodeForTypes = true,
-              diagnosticMode = 'workspace',
-            },
-            -- Don't hardcode paths, let Pyright find them
-            -- It'll check common patterns like venv, .venv, env, etc.
-          },
-        },
-        on_init = function(client)
-          local config = client.config.settings.python
-          print('Python settings:', vim.inspect(config))
-        end,
-      },
-      clangd = {
-        root_dir = function()
-          -- Tell clangd to look from the project root
-          return vim.fn.getcwd()
-        end,
-      },
-      gopls = {
-        capabilities = capabilities, -- Make sure it gets all our fancy capabilities
-        settings = {
-          gopls = {
-            usePlaceholders = true,
-            analyses = {
-              unusedparams = true,
-            },
-          },
-        },
-      },
-      ts_ls = {
-        settings = {
-          typescript = {
-            inlayHints = {
-              includeInlayParameterNameHints = 'all', -- Shows parameter names as you type
-              includeInlayParameterNameHintsWhenArgumentMatchesName = false, -- Show even when name matches
-              includeInlayFunctionParameterTypeHints = true, -- Parameter type hints
-              includeInlayVariableTypeHints = true, -- Variable type hints
-              includeInlayPropertyDeclarationTypeHints = true, -- Property type hints
-              includeInlayFunctionLikeReturnTypeHints = true, -- Return type hints
-              includeInlayEnumMemberValueHints = true, -- Enum value hints
-            },
-            suggest = {
-              includeCompletionsForModuleExports = true,
-              autoImports = true, -- The secret sauce! 🤫
-            },
-            preferences = {
-              importModuleSpecifier = 'non-relative',
-            },
-          },
-        },
-      },
+    -- Configure individual servers using the new vim.lsp.config() API
+    -- This replaces the old handlers system
 
-      lua_ls = {
-        settings = {
-          Lua = {
-            completion = {
-              callSnippet = 'Replace',
-            },
+    -- Python Language Server
+    vim.lsp.config('pyright', {
+      settings = {
+        python = {
+          analysis = {
+            autoSearchPaths = true,
+            useLibraryCodeForTypes = true,
+            diagnosticMode = 'workspace',
           },
         },
       },
-    }
+      on_init = function(client)
+        local config = client.config.settings.python
+        -- print('Python settings:', vim.inspect(config)) -- Uncomment for debugging
+      end,
+      capabilities = capabilities,
+    })
+
+    -- Clangd Language Server
+    vim.lsp.config('clangd', {
+      root_dir = function()
+        return vim.fn.getcwd()
+      end,
+      settings = {
+        inlayHints = {
+          parameterNames = true,
+          typeHints = true,
+          deducedTypes = true,
+          variableTypes = true,
+          autoDeclarations = true,
+        },
+      },
+      capabilities = capabilities,
+    })
+
+    -- Go Language Server
+    vim.lsp.config('gopls', {
+      settings = {
+        gopls = {
+          usePlaceholders = true,
+          analyses = {
+            unusedparams = true,
+          },
+        },
+      },
+      init_options = {
+        hints = {
+          assignVariableTypes = true,
+          compositeLiteralFields = true,
+          compositeLiteralTypes = true,
+          constantValues = true,
+          functionTypeParameters = true,
+          parameterNames = true,
+          rangeVariableTypes = true,
+        },
+      },
+      capabilities = capabilities,
+    })
+
+    -- TypeScript Language Server
+    vim.lsp.config('ts_ls', {
+      settings = {
+        typescript = {
+          inlayHints = {
+            includeInlayParameterNameHints = 'all',
+            includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+            includeInlayFunctionParameterTypeHints = true,
+            includeInlayVariableTypeHints = true,
+            includeInlayPropertyDeclarationTypeHints = true,
+            includeInlayFunctionLikeReturnTypeHints = true,
+            includeInlayEnumMemberValueHints = true,
+          },
+          suggest = {
+            includeCompletionsForModuleExports = true,
+            autoImports = true,
+          },
+          preferences = {
+            importModuleSpecifier = 'non-relative',
+          },
+        },
+      },
+      capabilities = capabilities,
+    })
+
+    -- Lua Language Server
+    vim.lsp.config('lua_ls', {
+      settings = {
+        Lua = {
+          completion = {
+            callSnippet = 'Replace',
+          },
+        },
+      },
+      capabilities = capabilities,
+    })
+
+    -- {{{ Mason and Mason-LSPConfig Setup
 
     require('mason').setup()
-    local ensure_installed = vim.tbl_keys(servers or {})
-    vim.list_extend(ensure_installed, {
-      'stylua',
-    })
-    require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
-    require('mason-lspconfig').setup {
-      ensure_installed = {},
-      automatic_installation = {
-        exclude = { 'clangd' }, -- Tell Mason to leave clangd alone
-      },
-      handlers = {
-        function(server_name)
-          local server = servers[server_name] or {}
-          server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-          require('lspconfig')[server_name].setup(server)
-        end,
-      },
+    -- Define tools to be installed by mason-tool-installer
+    local ensure_installed_tools = {
+      'pyright',
+      'clangd',
+      'gopls',
+      'ts_ls',
+      'lua_ls',
+      'stylua', -- Lua formatter
     }
 
+    require('mason-tool-installer').setup {
+      ensure_installed = ensure_installed_tools,
+    }
+
+    -- Configure Mason-LSPConfig with the new v2.0.0 API
+    require('mason-lspconfig').setup {
+      ensure_installed = { 'pyright', 'clangd', 'gopls', 'ts_ls', 'lua_ls' },
+      automatic_enable = true, -- This replaces the old handlers system
+    }
+
+    -- }}}
+
+    -- {{{ nvim-navic and nvim-navbuddy Setup
+
+    -- Configure nvim-navic (breadcrumbs)
     require('nvim-navic').setup {
       highlight = true,
       lsp = {
@@ -197,15 +284,7 @@ return {
         preference = nil,
       },
     }
-    require('nvim-navbuddy').setup {
-      window = {
-        border = 'rounded', -- Smooth edges, we're not barbarians!
-        size = '60%', -- Let's make it visible enough
-        position = '50%', -- Center it like a boss
-      },
-      lsp = {
-        auto_attach = true, -- Let it automatically attach to LSP servers
-      },
-    }
+    -- }}}
+    -- }}}
   end,
 }
