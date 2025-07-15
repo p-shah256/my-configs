@@ -1,17 +1,21 @@
 return {
   'neovim/nvim-lspconfig', -- Primary plugin for LSP client configurations
+  -- Load nvim-lspconfig and its direct dependencies only when opening a file.
+  -- This is the biggest win for startup time.
+  event = 'BufReadPre',
   dependencies = {
     -- LSP Server and Tool Installation/Management
+    -- Mason and its related plugins need to be available for LSP configuration
+    -- to work, so they are part of this group and will also be loaded with BufReadPre.
     { 'williamboman/mason.nvim', config = true }, -- Manages LSP servers, linters, formatters
     'williamboman/mason-lspconfig.nvim', -- Integrates Mason with nvim-lspconfig
     'WhoIsSethDaniel/mason-tool-installer.nvim', -- Automatically installs Mason tools based on detected language servers
 
     -- LSP Enhancements & Utilities
     'p00f/clangd_extensions.nvim', -- Provides additional features for clangd (e.g., AST highlighting).
-    -- Make sure to configure this if you plan to use its features.
     { 'j-hui/fidget.nvim', opts = {} }, -- Provides subtle status updates for LSP actions (e.g., "LSP: Initializing").
 
-    -- Autocompletion
+    -- Autocompletion (these are specifically for LSP-related completion)
     {
       'hrsh7th/nvim-cmp', -- The main completion plugin
       dependencies = {
@@ -19,6 +23,9 @@ return {
         'hrsh7th/cmp-path', -- Source for file system paths
         'hrsh7th/cmp-nvim-lsp', -- Source for LSP suggestions (crucial for LSP completion)
       },
+      -- CMP itself can be lazy loaded on 'InsertEnter', but since it's an LSP dependency here,
+      -- it will be loaded with 'BufReadPre'. If you had other CMP sources, you might load CMP
+      -- generally on 'InsertEnter' and then specifically trigger LSP sources.
     },
 
     -- Code Navigation & Structure
@@ -38,8 +45,6 @@ return {
     -- {{{ General LSP Configuration and Autocmds
 
     -- Set the highlight group for Inlay Hints.
-    -- This makes inlay hints appear in a specific color (fg) and italic.
-    -- Adjust 'fg' (foreground color) and 'italic' as per your theme preference.
     vim.api.nvim_set_hl(0, 'LspInlayHint', { fg = '#7f849c', bg = 'none', italic = true })
 
     -- Autocommand for 'LspAttach' event.
@@ -54,6 +59,8 @@ return {
         end
 
         -- Keymaps for common LSP functionalities:
+        -- These keymaps are buffer-local and only set when an LSP client attaches,
+        -- which is already lazy.
         map('gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
         map('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
         map('gI', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
@@ -68,9 +75,6 @@ return {
         local client = vim.lsp.get_client_by_id(event.data.client_id)
 
         -- Integrate nvim-navic (breadcrumbs) with the LSP client
-        -- Checks if the client supports 'documentSymbolProvider' before attaching.
-        -- Note: nvim-navic's `auto_attach = true` in its `setup` might make this line redundant,
-        -- but it's safe to keep for explicit attachment.
         if client and client.server_capabilities.documentSymbolProvider then
           require('nvim-navic').attach(client, event.buf)
         end
@@ -103,7 +107,6 @@ return {
           })
 
           -- Code Lens Refresh: Refresh code lenses (e.g., "run test", "references")
-          -- This often happens on buffer entry, cursor hold, or leaving insert mode.
           if client.server_capabilities.codeLensProvider then
             vim.api.nvim_create_autocmd({ 'BufEnter', 'CursorHold', 'InsertLeave' }, {
               group = highlight_augroup,
@@ -126,6 +129,7 @@ return {
     })
 
     -- Diagnostic Configuration: Visual indicators for errors, warnings, etc.
+    -- These are global settings and can be set at startup.
     vim.opt.signcolumn = 'yes' -- Always show the sign column to prevent text jumping
 
     -- Use Nerd Font symbols for diagnostics if available
@@ -150,9 +154,7 @@ return {
     capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
 
     -- Configure individual servers using the new vim.lsp.config() API
-    -- This replaces the old handlers system
-
-    -- Python Language Server
+    -- These configurations will be applied when the LSP plugin group loads.
     vim.lsp.config('pyright', {
       settings = {
         python = {
@@ -164,13 +166,11 @@ return {
         },
       },
       on_init = function(client)
-        local config = client.config.settings.python
         -- print('Python settings:', vim.inspect(config)) -- Uncomment for debugging
       end,
       capabilities = capabilities,
     })
 
-    -- Clangd Language Server
     vim.lsp.config('clangd', {
       root_dir = function()
         return vim.fn.getcwd()
@@ -187,7 +187,6 @@ return {
       capabilities = capabilities,
     })
 
-    -- Go Language Server
     vim.lsp.config('gopls', {
       settings = {
         gopls = {
@@ -211,7 +210,6 @@ return {
       capabilities = capabilities,
     })
 
-    -- TypeScript Language Server
     vim.lsp.config('ts_ls', {
       settings = {
         typescript = {
@@ -236,7 +234,6 @@ return {
       capabilities = capabilities,
     })
 
-    -- Lua Language Server
     vim.lsp.config('lua_ls', {
       settings = {
         Lua = {
@@ -277,6 +274,7 @@ return {
     -- {{{ nvim-navic and nvim-navbuddy Setup
 
     -- Configure nvim-navic (breadcrumbs)
+    -- This setup function will run when nvim-lspconfig is loaded.
     require('nvim-navic').setup {
       highlight = true,
       lsp = {

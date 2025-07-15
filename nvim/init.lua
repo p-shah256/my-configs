@@ -298,6 +298,7 @@ require('lazy').setup {
   {
     'nvim-treesitter/nvim-treesitter-textobjects',
     after = 'nvim-treesitter',
+    event = 'VeryLazy',
   },
 
   -- The following comments only work if you have downloaded the kickstart repo, not just copy pasted the

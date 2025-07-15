@@ -35,11 +35,17 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
+-- Wrap selection with a character
 vim.keymap.set('x', '<leader>w', function()
-    local char = vim.fn.getchar()
-    char = vim.fn.nr2char(char)
-    
-    -- Simple but effective!
-    local cmd = '`<i' .. char .. '<esc>`>a' .. char .. '<esc>'
-    vim.cmd('normal! ' .. cmd)
+  local char = vim.fn.getchar()
+  char = vim.fn.nr2char(char)
+
+  -- Simple but effective!
+  local cmd = '`<i' .. char .. '<esc>`>a' .. char .. '<esc>'
+  vim.cmd('normal! ' .. cmd)
 end, { desc = 'Wrap selection with character' })
+
+
+-- on by default, Neovim does not wrap lines, which can be inconvenient for reading long lines of text.
+vim.opt.wrap = true
+vim.keymap.set('n', '<leader>tw', '<cmd>set wrap!<CR>', { desc = '[t]oggle [w]rap' })
